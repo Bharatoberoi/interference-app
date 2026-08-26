@@ -199,4 +199,6 @@ def prometheus_metrics():
 @app.get('/api/health')
 def health(): return {'status':'ok','service':'a6-orchestrator'}
 
-app.mount('/', StaticFiles(directory=str(Path(__file__).resolve().parent.parent / 'frontend' / 'dist'), html=True), name='frontend')
+frontend_dist = Path(__file__).resolve().parent.parent / 'frontend' / 'dist'
+if frontend_dist.exists():
+    app.mount('/', StaticFiles(directory=str(frontend_dist), html=True), name='frontend')
