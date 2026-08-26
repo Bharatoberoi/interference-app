@@ -1,4 +1,5 @@
 import asyncio, json, uuid, os, sqlite3, logging, time
+import psycopg
 from pathlib import Path
 from datetime import datetime, timezone
 from typing import Any, TypedDict
@@ -13,6 +14,7 @@ app = FastAPI(title='A6 Interference Management POC')
 app.add_middleware(CORSMiddleware, allow_origins=['*'], allow_methods=['*'], allow_headers=['*'])
 streams: dict[str, asyncio.Queue] = {}
 DB_PATH = os.getenv('A6_DB_PATH', str(Path(__file__).resolve().parent / 'a6_runs.db'))
+DATABASE_URL = os.getenv('DATABASE_URL', '')
 API_KEY = os.getenv('A6_API_KEY', '')
 metrics = {'runs_started': 0, 'runs_completed': 0, 'runs_failed': 0, 'events_emitted': 0}
 
@@ -23,9 +25,27 @@ logging.basicConfig(level=os.getenv('LOG_LEVEL', 'INFO'), format='%(message)s')
 log = logging.getLogger('a6')
 
 def init_db():
+    if DATABASE_URL:
+        with psycopg.connect(DATABASE_URL) as db:
+            db.execute('CREATE TABLE IF NOT EXISTS runs (run_id TEXT PRIMARY KEY, scenario TEXT NOT NULL, status TEXT NOT NULL, created_at TIMESTAMPTZ NOT NULL, updated_at TIMESTAMPTZ NOT NULL, outcome TEXT)')
+            db.execute('CREATE TABLE IF NOT EXISTS workflow_events (id TEXT PRIMARY KEY, run_id TEXT NOT NULL REFERENCES runs(run_id) ON DELETE CASCADE, ts TIMESTAMPTZ NOT NULL, kind TEXT NOT NULL, title TEXT NOT NULL, message TEXT NOT NULL, payload JSONB)')
+        return
     with sqlite3.connect(DB_PATH) as db:
         db.execute('CREATE TABLE IF NOT EXISTS runs (run_id TEXT PRIMARY KEY, scenario TEXT, status TEXT, created_at TEXT, updated_at TEXT, outcome TEXT)')
 init_db()
+
+def save_run(run_id, scenario, status, created_at, updated_at, outcome=None):
+    if DATABASE_URL:
+        with psycopg.connect(DATABASE_URL) as db:
+            db.execute('INSERT INTO runs VALUES (%s,%s,%s,%s,%s,%s)', (run_id, scenario, status, created_at, updated_at, outcome))
+    else:
+        with sqlite3.connect(DB_PATH) as db: db.execute('INSERT INTO runs VALUES (?, ?, ?, ?, ?, ?)', (run_id, scenario, status, created_at, updated_at, outcome))
+
+def update_run(run_id, status, outcome):
+    if DATABASE_URL:
+        with psycopg.connect(DATABASE_URL) as db: db.execute('UPDATE runs SET status=%s, outcome=%s, updated_at=%s WHERE run_id=%s', (status, outcome, now(), run_id))
+    else:
+        with sqlite3.connect(DB_PATH) as db: db.execute('UPDATE runs SET status=?, outcome=?, updated_at=? WHERE run_id=?', (status, outcome, now(), run_id))
 
 def require_auth(x_api_key: str | None = Header(default=None)):
     if API_KEY and x_api_key != API_KEY:
@@ -39,6 +59,9 @@ def now(): return datetime.now(timezone.utc).isoformat()
 
 async def emit(run_id: str, kind: str, title: str, message: str, **extra):
     event = {'id': str(uuid.uuid4()), 'ts': now(), 'kind': kind, 'title': title, 'message': message, **extra}
+    if DATABASE_URL:
+        with psycopg.connect(DATABASE_URL) as db:
+            db.execute('INSERT INTO workflow_events (id,run_id,ts,kind,title,message,payload) VALUES (%s,%s,%s,%s,%s,%s,%s)', (event['id'], run_id, event['ts'], kind, title, message, json.dumps(extra)))
     await streams[run_id].put(event)
     metrics['events_emitted'] += 1
     log.info(json.dumps({'event': 'workflow_event', 'run_id': run_id, 'kind': kind, 'title': title, 'graph_state': extra.get('graph_state')}))
@@ -156,11 +179,11 @@ async def workflow(run_id, scenario, kill_switch):
     try:
         result = await compiled_graph.ainvoke({'run_id':run_id, 'scenario':scenario, 'kill_switch':kill_switch})
         outcome = result.get('outcome', 'success')
-        with sqlite3.connect(DB_PATH) as db: db.execute('UPDATE runs SET status=?, outcome=?, updated_at=? WHERE run_id=?', ('completed', outcome, now(), run_id))
+        update_run(run_id, 'completed', outcome)
         if outcome == 'failed': metrics['runs_failed'] += 1
         else: metrics['runs_completed'] += 1
     except Exception:
-        with sqlite3.connect(DB_PATH) as db: db.execute('UPDATE runs SET status=?, outcome=?, updated_at=? WHERE run_id=?', ('failed', 'error', now(), run_id))
+        update_run(run_id, 'failed', 'error')
         metrics['runs_failed'] += 1
         log.exception(json.dumps({'event':'workflow_failed','run_id':run_id}))
     finally: await streams[run_id].put(None)
@@ -168,7 +191,7 @@ async def workflow(run_id, scenario, kill_switch):
 @app.post('/api/runs', dependencies=[Depends(require_auth)])
 async def start(req: RunRequest):
     run_id = str(uuid.uuid4()); streams[run_id] = asyncio.Queue()
-    with sqlite3.connect(DB_PATH) as db: db.execute('INSERT INTO runs VALUES (?, ?, ?, ?, ?, ?)', (run_id, req.scenario, 'running', now(), now(), None))
+    save_run(run_id, req.scenario, 'running', now(), now())
     metrics['runs_started'] += 1
     log.info(json.dumps({'event':'workflow_started','run_id':run_id,'scenario':req.scenario}))
     asyncio.create_task(workflow(run_id, req.scenario, req.kill_switch))
