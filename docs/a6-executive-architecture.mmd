@@ -1,0 +1,44 @@
+flowchart LR
+    subgraph client ["USER EXPERIENCE"]
+        console["Operations Console"]
+    end
+    subgraph gateway ["ACCESS AND API"]
+        api["FastAPI API Gateway"]
+    end
+    subgraph service ["A6 CONTROL PLANE"]
+        workflow["LangGraph Workflow Orchestrator"]
+        agents["RF Scan, Decision, and Remediation Agents"]
+        policy["Safety Guardrails and Kill Switch"]
+        adapters["Integration Adapter Layer"]
+        telemetry["Metrics and Structured Logging"]
+    end
+    subgraph datastore ["PERSISTENCE"]
+        runDb["SQLite Run and Audit State"]
+    end
+    subgraph async ["EVENTING"]
+        eventStream["Redis Stream: a6.events"]
+    end
+    subgraph external ["INTEGRATIONS AND OPERATIONS"]
+        jims["JIMS: Interference Candidates"]
+        mmp["MMP: Parameter Remediation"]
+        hpsm["HPSM: Incident Pre-Log"]
+        rf["RF Telemetry Source"]
+        prometheus["Prometheus Metrics"]
+        grafana["Grafana Dashboards"]
+    end
+
+    console -->|"HTTPS and live SSE"| api
+    api -->|"Starts and queries runs"| workflow
+    workflow -->|"Executes graph"| agents
+    agents -->|"Applies policy"| policy
+    policy -->|"Authorizes changes"| adapters
+    workflow -->|"Reads and writes run state"| runDb
+    workflow -.->|"Consumes requests"| eventStream
+    workflow -.->|"Publishes workflow events"| eventStream
+    adapters -.->|"JIMS: candidate lookup"| jims
+    adapters -.->|"MMP: apply or rollback"| mmp
+    adapters -.->|"HPSM: pre-log change"| hpsm
+    adapters -.->|"RF: scan telemetry"| rf
+    api -->|"Exposes health and metrics"| telemetry
+    telemetry -.->|"Scrape metrics"| prometheus
+    telemetry -.->|"Feeds dashboards"| grafana

@@ -1,0 +1,15 @@
+groups:
+  - name: a6-local-alerts
+    rules:
+      - alert: A6WorkflowFailures
+        expr: increase(a6_runs_failed[5m]) > 0
+        for: 10s
+        labels: {severity: warning}
+        annotations:
+          summary: A6 workflow failure detected
+      - alert: A6NoEventsProcessed
+        expr: increase(a6_events_emitted[10m]) == 0
+        for: 2m
+        labels: {severity: warning}
+        annotations:
+          summary: No A6 workflow events processed

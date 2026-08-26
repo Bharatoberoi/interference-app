@@ -1,0 +1,33 @@
+# Secrets and local configuration
+.env
+.env.*
+!.env.example
+
+# Python
+__pycache__/
+*.py[cod]
+*.egg-info/
+.venv/
+venv/
+
+# Local application data
+backend/*.db
+backend/*.sqlite
+backend/*.sqlite3
+
+# Node / frontend
+node_modules/
+frontend/.vite/
+
+# Build and tooling output
+dist/
+a6-frontend-vercel.zip
+.pytest_cache/
+.mypy_cache/
+.ruff_cache/
+
+# IDE and OS files
+.vscode/
+.idea/
+.DS_Store
+Thumbs.db

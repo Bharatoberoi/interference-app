@@ -1,0 +1,45 @@
+openapi: 3.0.3
+info: { title: Local MMP Mock API, version: 0.1.0 }
+servers: [{ url: http://localhost:8102 }]
+paths:
+  /parameters:
+    patch:
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema: {$ref: '#/components/schemas/ParameterChange'}
+      responses:
+        '200':
+          description: Change accepted
+          content:
+            application/json:
+              schema: {$ref: '#/components/schemas/ChangeResponse'}
+  /parameters/rollback:
+    patch:
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema: {$ref: '#/components/schemas/RollbackRequest'}
+      responses: {'200': {description: Rollback completed}}
+components:
+  schemas:
+    ParameterChange:
+      type: object
+      required: [sector, mcs]
+      properties:
+        sector: {type: string}
+        mcs: {type: string, example: QPSK-1/2}
+    RollbackRequest:
+      type: object
+      required: [sector, restore]
+      properties:
+        sector: {type: string}
+        restore: {type: string, example: previous}
+    ChangeResponse:
+      type: object
+      properties:
+        ok: {type: boolean}
+        requestId: {type: string}
+        appliedAt: {type: string, format: date-time}

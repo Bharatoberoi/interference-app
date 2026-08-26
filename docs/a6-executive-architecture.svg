@@ -1,0 +1,57 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1800" height="1050" viewBox="0 0 1800 1050">
+<defs>
+  <linearGradient id="bg" x2="0" y2="1"><stop stop-color="#f7fafc"/><stop offset="1" stop-color="#eef3f7"/></linearGradient>
+  <filter id="shadow" x="-20%" y="-20%" width="140%" height="140%"><feDropShadow dx="0" dy="4" stdDeviation="6" flood-color="#17324d" flood-opacity=".14"/></filter>
+  <marker id="arrow" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="8" markerHeight="8" orient="auto-start-reverse"><path d="M 0 0 L 10 5 L 0 10 z" fill="#557187"/></marker>
+  <style>
+    .title{font:700 34px Arial;fill:#17324d}.subtitle{font:400 16px Arial;fill:#62788b}.lane{font:700 16px Arial;letter-spacing:1.4px;fill:#fff}.node{font:600 17px Arial;fill:#17324d}.small{font:400 14px Arial;fill:#536b7d}.edge{font:500 13px Arial;fill:#516b80}.line{stroke:#557187;stroke-width:2.5;fill:none;marker-end:url(#arrow)}.dotted{stroke-dasharray:7 6}.box{filter:url(#shadow)}
+  </style>
+</defs>
+<rect width="1800" height="1050" fill="url(#bg)"/>
+<rect x="1460" y="45" width="270" height="42" rx="21" fill="#17324d"/><circle cx="1485" cy="66" r="7" fill="#65d39a"/><text x="1503" y="72" style="font:700 14px Arial;fill:#fff;letter-spacing:1px">POC ARCHITECTURE</text>
+<text x="70" y="70" class="title">A6 Interference Management</text>
+<text x="70" y="101" class="subtitle">Executive architecture | Observable orchestration control plane | Management overview</text>
+<line x1="70" y1="125" x2="1730" y2="125" stroke="#d6e0e8" stroke-width="2"/>
+
+<!-- lanes -->
+<rect x="55" y="160" width="250" height="750" rx="16" fill="#dcecf5"/><rect x="55" y="160" width="250" height="52" rx="16" fill="#2e789d"/><text x="80" y="193" class="lane">USER EXPERIENCE</text>
+<rect x="330" y="160" width="250" height="750" rx="16" fill="#e6e6fb"/><rect x="330" y="160" width="250" height="52" rx="16" fill="#5b5bb2"/><text x="355" y="193" class="lane">ACCESS AND API</text>
+<rect x="605" y="160" width="500" height="750" rx="16" fill="#e4f3ec"/><rect x="605" y="160" width="500" height="52" rx="16" fill="#27805f"/><text x="630" y="193" class="lane">A6 CONTROL PLANE</text>
+<rect x="1130" y="160" width="250" height="750" rx="16" fill="#fff2dc"/><rect x="1130" y="160" width="250" height="52" rx="16" fill="#b77420"/><text x="1155" y="193" class="lane">PERSISTENCE</text>
+<rect x="1405" y="160" width="340" height="750" rx="16" fill="#f3e6f2"/><rect x="1405" y="160" width="340" height="52" rx="16" fill="#8b4f88"/><text x="1430" y="193" class="lane">EVENTING AND OPERATIONS</text>
+
+<!-- nodes -->
+<g class="box"><rect x="85" y="390" width="190" height="90" rx="12" fill="#fff" stroke="#8bc1d8" stroke-width="2"/><text x="180" y="427" text-anchor="middle" class="node">Operations</text><text x="180" y="451" text-anchor="middle" class="node">Console</text><text x="180" y="472" text-anchor="middle" class="small">React / Vite</text></g>
+<g class="box"><rect x="360" y="390" width="190" height="90" rx="12" fill="#fff" stroke="#aaa9e2" stroke-width="2"/><text x="455" y="427" text-anchor="middle" class="node">FastAPI</text><text x="455" y="451" text-anchor="middle" class="node">API Gateway</text><text x="455" y="472" text-anchor="middle" class="small">HTTP + live SSE</text></g>
+
+<g class="box"><rect x="640" y="270" width="220" height="92" rx="12" fill="#fff" stroke="#8ac7ab" stroke-width="2"/><text x="750" y="307" text-anchor="middle" class="node">LangGraph Workflow</text><text x="750" y="331" text-anchor="middle" class="node">Orchestrator</text><text x="750" y="353" text-anchor="middle" class="small">Run lifecycle and state</text></g>
+<g class="box"><rect x="875" y="270" width="205" height="92" rx="12" fill="#fff" stroke="#8ac7ab" stroke-width="2"/><text x="977" y="307" text-anchor="middle" class="node">RF Scan, Decision</text><text x="977" y="331" text-anchor="middle" class="node">and Remediation</text><text x="977" y="353" text-anchor="middle" class="small">Agent workflow</text></g>
+<g class="box"><rect x="640" y="470" width="220" height="92" rx="12" fill="#fff" stroke="#8ac7ab" stroke-width="2"/><text x="750" y="507" text-anchor="middle" class="node">Safety Guardrails</text><text x="750" y="531" text-anchor="middle" class="node">and Kill Switch</text><text x="750" y="553" text-anchor="middle" class="small">Protects changes</text></g>
+<g class="box"><rect x="875" y="470" width="205" height="92" rx="12" fill="#fff" stroke="#8ac7ab" stroke-width="2"/><text x="977" y="507" text-anchor="middle" class="node">Integration</text><text x="977" y="531" text-anchor="middle" class="node">Adapter Layer</text><text x="977" y="553" text-anchor="middle" class="small">External boundaries</text></g>
+<g class="box"><rect x="755" y="690" width="205" height="92" rx="12" fill="#fff" stroke="#8ac7ab" stroke-width="2"/><text x="857" y="727" text-anchor="middle" class="node">Metrics and</text><text x="857" y="751" text-anchor="middle" class="node">Structured Logging</text><text x="857" y="773" text-anchor="middle" class="small">Health and telemetry</text></g>
+<g class="box"><rect x="1160" y="420" width="190" height="105" rx="12" fill="#fff" stroke="#e1b66c" stroke-width="2"/><text x="1255" y="459" text-anchor="middle" class="node">SQLite Run</text><text x="1255" y="483" text-anchor="middle" class="node">and Audit State</text><text x="1255" y="507" text-anchor="middle" class="small">Current POC store</text></g>
+<g class="box"><rect x="1435" y="275" width="280" height="86" rx="12" fill="#fff" stroke="#c28fbd" stroke-width="2"/><text x="1575" y="313" text-anchor="middle" class="node">Redis Stream: a6.events</text><text x="1575" y="337" text-anchor="middle" class="small">Async workflow requests and events</text></g>
+<g class="box"><rect x="1435" y="470" width="125" height="86" rx="12" fill="#fff" stroke="#c28fbd" stroke-width="2"/><text x="1497" y="508" text-anchor="middle" class="node">JIMS</text><text x="1497" y="532" text-anchor="middle" class="small">Candidates</text></g>
+<g class="box"><rect x="1585" y="470" width="130" height="86" rx="12" fill="#fff" stroke="#c28fbd" stroke-width="2"/><text x="1650" y="508" text-anchor="middle" class="node">MMP</text><text x="1650" y="532" text-anchor="middle" class="small">Remediation</text></g>
+<g class="box"><rect x="1435" y="610" width="125" height="86" rx="12" fill="#fff" stroke="#c28fbd" stroke-width="2"/><text x="1497" y="648" text-anchor="middle" class="node">HPSM</text><text x="1497" y="672" text-anchor="middle" class="small">Pre-log</text></g>
+<g class="box"><rect x="1585" y="610" width="130" height="86" rx="12" fill="#fff" stroke="#c28fbd" stroke-width="2"/><text x="1650" y="648" text-anchor="middle" class="node">RF Telemetry</text><text x="1650" y="672" text-anchor="middle" class="small">Scan source</text></g>
+<g class="box"><rect x="1435" y="755" width="125" height="86" rx="12" fill="#fff" stroke="#c28fbd" stroke-width="2"/><text x="1497" y="793" text-anchor="middle" class="node">Prometheus</text><text x="1497" y="817" text-anchor="middle" class="small">Metrics</text></g>
+<g class="box"><rect x="1585" y="755" width="130" height="86" rx="12" fill="#fff" stroke="#c28fbd" stroke-width="2"/><text x="1650" y="793" text-anchor="middle" class="node">Grafana</text><text x="1650" y="817" text-anchor="middle" class="small">Dashboards</text></g>
+
+<!-- edges -->
+<path d="M275 435 L360 435" class="line"/><text x="292" y="423" class="edge">HTTPS / SSE</text>
+<path d="M550 420 C585 420 595 315 640 315" class="line"/><text x="565" y="352" class="edge">Starts runs</text>
+<path d="M860 316 L875 316" class="line"/>
+<path d="M977 362 C977 410 750 415 750 470" class="line"/><text x="843" y="405" class="edge">Policy check</text>
+<path d="M860 516 L875 516" class="line"/>
+<path d="M1080 516 C1190 516 1320 515 1435 515" class="line dotted"/><text x="1125" y="500" class="edge">External APIs</text>
+<path d="M750 362 C750 395 1125 395 1160 450" class="line"/><text x="1000" y="389" class="edge">Run state</text>
+<path d="M860 736 C1060 736 1270 736 1435 798" class="line dotted"/><text x="1100" y="757" class="edge">Metrics</text>
+<path d="M860 300 C1100 250 1250 260 1435 318" class="line dotted"/><text x="1110" y="250" class="edge">Events</text>
+
+<rect x="70" y="945" width="1660" height="62" rx="12" fill="#fff" stroke="#d6e0e8" stroke-width="1.5"/>
+<line x1="100" y1="976" x2="160" y2="976" class="line"/><text x="175" y="981" class="edge">Synchronous control flow</text>
+<line x1="420" y1="976" x2="480" y2="976" class="line dotted"/><text x="495" y="981" class="edge">Async or external boundary</text>
+<circle cx="815" cy="976" r="7" fill="#65d39a"/><text x="835" y="981" class="edge">Safety and observability are built into the control plane</text>
+<text x="70" y="1030" class="subtitle">POC note: JIMS, MMP, HPSM, and RF Telemetry are mocked adapters today and can be replaced by production clients without changing the orchestration boundary.</text>
+</svg>

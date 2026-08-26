@@ -1,0 +1,20 @@
+[
+  {
+    "timestamp": "2026-08-24T10:00:00Z",
+    "sector": "DEL-042",
+    "cell": "DEL-042-C1",
+    "rssi_dbm": -92,
+    "sinr_db": 3.1,
+    "throughput_mbps": 18.4,
+    "co_channel_interference": true
+  },
+  {
+    "timestamp": "2026-08-24T10:00:05Z",
+    "sector": "DEL-042",
+    "cell": "DEL-042-C2",
+    "rssi_dbm": -71,
+    "sinr_db": 17.8,
+    "throughput_mbps": 86.2,
+    "co_channel_interference": false
+  }
+]

@@ -1,0 +1,28 @@
+openapi: 3.0.3
+info: { title: Local RF Telemetry Mock API, version: 0.1.0 }
+servers: [{ url: http://localhost:8104 }]
+paths:
+  /telemetry:
+    get:
+      parameters:
+        - {name: sector, in: query, required: true, schema: {type: string}}
+      responses:
+        '200':
+          description: RF measurements
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  sector: {type: string}
+                  measurements:
+                    type: array
+                    items:
+                      type: object
+                      properties:
+                        timestamp: {type: string, format: date-time}
+                        cell: {type: string}
+                        rssi_dbm: {type: number}
+                        sinr_db: {type: number}
+                        throughput_mbps: {type: number}
+                        co_channel_interference: {type: boolean}

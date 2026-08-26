@@ -1,0 +1,64 @@
+services:
+  app:
+    build: .
+    ports:
+      - "8000:8000"
+    environment:
+      A6_API_KEY: ${A6_API_KEY:-}
+      A6_DB_PATH: /data/a6_runs.db
+      LANGSMITH_TRACING: ${LANGSMITH_TRACING:-false}
+      LANGSMITH_API_KEY: ${LANGSMITH_API_KEY:-}
+      LANGSMITH_PROJECT: ${LANGSMITH_PROJECT:-a6-interference-poc}
+      LANGSMITH_ENDPOINT: ${LANGSMITH_ENDPOINT:-https://api.smith.langchain.com}
+    volumes:
+      - a6-data:/data
+  redis:
+    image: redis:7-alpine
+    profiles: ["redis"]
+    ports:
+      - "6379:6379"
+  keycloak:
+    image: quay.io/keycloak/keycloak:26.3
+    command: start-dev
+    environment:
+      KC_BOOTSTRAP_ADMIN_USERNAME: admin
+      KC_BOOTSTRAP_ADMIN_PASSWORD: admin123
+    ports:
+      - "8081:8080"
+  jims-mock:
+    build: ./mock-services
+    environment: [SERVICE_NAME=jims]
+    ports: ["8101:8100"]
+  mmp-mock:
+    build: ./mock-services
+    environment: [SERVICE_NAME=mmp]
+    ports: ["8102:8100"]
+  hpsm-mock:
+    build: ./mock-services
+    environment: [SERVICE_NAME=hpsm]
+    ports: ["8103:8100"]
+  rf-telemetry-mock:
+    build: ./mock-services
+    environment: [SERVICE_NAME=rf]
+    ports: ["8104:8100"]
+  prometheus:
+    image: prom/prometheus:v3.5.0
+    depends_on: [app]
+    volumes:
+      - ./observability/prometheus.yml:/etc/prometheus/prometheus.yml:ro
+      - ./observability/alerts.yml:/etc/prometheus/alerts.yml:ro
+      - prometheus-data:/prometheus
+    ports: ["9090:9090"]
+  grafana:
+    image: grafana/grafana:12.1.1
+    environment:
+      GF_SECURITY_ADMIN_USER: admin
+      GF_SECURITY_ADMIN_PASSWORD: admin123
+    depends_on: [prometheus]
+    ports: ["3000:3000"]
+    volumes:
+      - grafana-data:/var/lib/grafana
+volumes:
+  a6-data:
+  prometheus-data:
+  grafana-data:

@@ -1,0 +1,38 @@
+openapi: 3.0.3
+info:
+  title: Local JIMS Mock API
+  version: 0.1.0
+servers:
+  - url: http://localhost:8101
+paths:
+  /interference/candidates:
+    get:
+      parameters:
+        - name: sector
+          in: query
+          required: true
+          schema: { type: string, example: DEL-042 }
+      responses:
+        '200':
+          description: Interference candidates
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/CandidateResponse'
+components:
+  schemas:
+    CandidateResponse:
+      type: object
+      required: [sector, candidates]
+      properties:
+        sector: { type: string }
+        candidates:
+          type: array
+          items:
+            type: object
+            required: [cell, rssi_dbm, co_channel_interference, mcs]
+            properties:
+              cell: { type: string }
+              rssi_dbm: { type: number }
+              co_channel_interference: { type: boolean }
+              mcs: { type: string }
